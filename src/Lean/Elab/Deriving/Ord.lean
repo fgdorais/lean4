@@ -86,9 +86,26 @@ def mkMutualBlock (ctx : Context) : TermElabM Syntax := do
      $auxDefs:command*
     end)
 
-private def mkOrdInstanceCmds (declNames : Array Name) : TermElabM (Array Syntax) := do
+open TSyntax.Compat in
+def mkOrdInstanceCmds (ctx : Context) (typeNames : Array Name) : TermElabM (Array Command) := do
+  let mut instances := #[]
+  for i in [:ctx.typeInfos.size] do
+    let indVal       := ctx.typeInfos[i]!
+    if typeNames.contains indVal.name then
+      let auxFunName   := ctx.auxFunNames[i]!
+      let argNames     ← mkInductArgNames indVal
+      let binders      ← mkImplicitBinders argNames
+      let binders      := binders ++ (← mkInstImplicitBinders `Ord indVal argNames)
+      let indType      ← mkInductiveApp indVal argNames
+      let type         ← `(Ord $indType)
+      let val          ← `({compare:=$(mkIdent auxFunName)})
+      let instCmd ← `(instance $binders:implicitBinder* : $type := $val)
+      instances := instances.push instCmd
+  return instances
+
+private def mkOrdCmds (declNames : Array Name) : TermElabM (Array Syntax) := do
   let ctx ← mkContext "ord" declNames[0]!
-  let cmds := #[← mkMutualBlock ctx] ++ (← mkInstanceCmds ctx `Ord declNames)
+  let cmds := #[← mkMutualBlock ctx] ++ (← mkOrdInstanceCmds ctx declNames)
   trace[Elab.Deriving.ord] "\n{cmds}"
   return cmds
 
@@ -96,7 +113,7 @@ open Command
 
 def mkOrdInstanceHandler (declNames : Array Name) : CommandElabM Bool := do
   if (← declNames.allM isInductive) && declNames.size > 0 then
-    let cmds ← liftTermElabM <| mkOrdInstanceCmds declNames
+    let cmds ← liftTermElabM <| mkOrdCmds declNames
     cmds.forM elabCommand
     return true
   else
