@@ -165,8 +165,6 @@ partial def InfoTree.hoverableInfoAt? (t : InfoTree) (hoverPos : String.Pos) (in
   -- sort results by lexicographical priority
   let maxPrio? :=
     let _ := @lexOrd
-    let _ := @leOfOrd.{0}
-    let _ := @maxOfLe
     results.map (·.1) |>.maximum?
   let res? := results.find? (·.1 == maxPrio?) |>.map (·.2)
   if let some (_, i) := res? then

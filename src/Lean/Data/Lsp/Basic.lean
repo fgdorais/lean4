@@ -31,21 +31,27 @@ offsets. For diagnostics, one-based `Lean.Position`s are used internally.
 structure Position where
   line : Nat
   character : Nat
-  deriving Inhabited, BEq, Ord, Hashable, ToJson, FromJson
+  deriving Inhabited, Ord, Hashable, ToJson, FromJson
+
+instance (a b : Position) : Decidable (a < b) :=
+  inferInstanceAs (Decidable (_ == _))
+
+instance (a b : Position) : Decidable (a ≤ b) :=
+  inferInstanceAs (Decidable (_ != _))
 
 instance : ToString Position := ⟨fun p =>
   "(" ++ toString p.line ++ ", " ++ toString p.character ++ ")"⟩
 
-instance : LT Position := ltOfOrd
-instance : LE Position := leOfOrd
-
 structure Range where
   start : Position
   «end» : Position
-  deriving Inhabited, BEq, Hashable, ToJson, FromJson, Ord
+  deriving Inhabited, Ord, Hashable, ToJson, FromJson
 
-instance : LT Range := ltOfOrd
-instance : LE Range := leOfOrd
+instance (a b : Range) : Decidable (a < b) :=
+  inferInstanceAs (Decidable (_ == _))
+
+instance (a b : Range) : Decidable (a ≤ b) :=
+  inferInstanceAs (Decidable (_ != _))
 
 /-- A `Location` is a `DocumentUri` and a `Range`. -/
 structure Location where

@@ -11,11 +11,8 @@ structure Var where
   id : Nat
   deriving Inhabited, Ord, DecidableEq, Repr
 
-instance : LT Var where
-  lt a b := a.id < b.id
-
-instance (a b : Var) : Decidable (a < b) :=
-  inferInstanceAs (Decidable (a.id < b.id))
+instance (a b : Var) : Decidable (a < b) := 
+  inferInstanceAs (Decidable (_==_))
 
 structure Assignment where
   val : Array Rat := #[]

@@ -22,7 +22,7 @@ inductive RequestID where
   | str (s : String)
   | num (n : JsonNumber)
   | null
-  deriving Inhabited, BEq, Ord
+  deriving Inhabited, Ord
 
 instance : OfNat RequestID n := ⟨RequestID.num n⟩
 

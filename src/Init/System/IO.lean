@@ -392,10 +392,7 @@ inductive FileType where
 structure SystemTime where
   sec  : Int
   nsec : UInt32
-  deriving Repr, BEq, Ord, Inhabited
-
-instance : LT SystemTime := ltOfOrd
-instance : LE SystemTime := leOfOrd
+  deriving Repr, Ord, Inhabited
 
 structure Metadata where
   --permissions : ...

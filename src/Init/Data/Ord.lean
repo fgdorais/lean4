@@ -12,11 +12,20 @@ inductive Ordering where
   | lt | eq | gt
 deriving Inhabited, BEq
 
-
-class Ord (α : Type u) where
+class Ord (α : Type u) extends BEq α, LT α, LE α, Min α, Max α where
   compare : α → α → Ordering
+  beq x y := compare x y == .eq
+  lt x y := compare x y == .lt
+  le x y := compare x y != .gt
+  min x y := if compare x y != .gt then x else y
+  max x y := if compare x y != .gt then y else x
 
 export Ord (compare)
+
+@[inline] def compareOfLE [LE α] [DecidableRel (LE.le (α:=α))] (x y : α) : Ordering :=
+  if x ≤ y then if x ≥ y then .eq else .lt else .gt
+
+def ordOfLE (α) [LE α] [DecidableRel (LE.le (α:=α))] : Ord α := {compare:=compareOfLE}
 
 @[inline] def compareOfLessAndEq {α} (x y : α) [LT α] [Decidable (x < y)] [DecidableEq α] : Ordering :=
   if x < y then Ordering.lt
@@ -64,20 +73,3 @@ def lexOrd [Ord α] [Ord β] : Ord (α × β) where
   compare p1 p2 := match compare p1.1 p2.1 with
     | .eq => compare p1.2 p2.2
     | o   => o
-
-def ltOfOrd [Ord α] : LT α where
-  lt a b := compare a b == Ordering.lt
-
-instance [Ord α] : DecidableRel (@LT.lt α ltOfOrd) :=
-  inferInstanceAs (DecidableRel (fun a b => compare a b == Ordering.lt))
-
-def Ordering.isLE : Ordering → Bool
-  | Ordering.lt => true
-  | Ordering.eq => true
-  | Ordering.gt => false
-
-def leOfOrd [Ord α] : LE α where
-  le a b := (compare a b).isLE
-
-instance [Ord α] : DecidableRel (@LE.le α leOfOrd) :=
-  inferInstanceAs (DecidableRel (fun a b => (compare a b).isLE))
