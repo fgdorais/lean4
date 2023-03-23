@@ -105,14 +105,12 @@ protected def ceil (a : Rat) : Int :=
     let r := a.num / a.den
     if a.num > 0 then r + 1 else r
 
-instance : LT Rat where
-  lt a b := (Rat.lt a b) = true
+instance : LE Rat where
+  le a b := Rat.lt a b ≠ true 
+  lt a b := Rat.lt a b = true
 
 instance (a b : Rat) : Decidable (a < b) :=
   inferInstanceAs (Decidable (_ = true))
-
-instance : LE Rat where
-  le a b := ¬(b < a)
 
 instance (a b : Rat) : Decidable (a ≤ b) :=
   inferInstanceAs (Decidable (¬ _))

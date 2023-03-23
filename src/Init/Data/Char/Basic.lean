@@ -18,8 +18,9 @@ namespace Char
 protected def lt (a b : Char) : Prop := a.val < b.val
 protected def le (a b : Char) : Prop := a.val ≤ b.val
 
-instance : LT Char := ⟨Char.lt⟩
-instance : LE Char := ⟨Char.le⟩
+instance : LE Char where
+  le := Char.le
+  lt := Char.lt
 
 instance (a b : Char) :  Decidable (a < b) :=
   UInt32.decLt _ _

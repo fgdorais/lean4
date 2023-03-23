@@ -37,21 +37,21 @@ instance : Inhabited Float := ⟨{ val := floatSpec.val }⟩
 @[extern "lean_float_div"] opaque Float.div : Float → Float → Float
 @[extern "lean_float_negate"] opaque Float.neg : Float → Float
 
-set_option bootstrap.genMatcherCode false
-def Float.lt : Float → Float → Prop := fun a b =>
-  match a, b with
-  | ⟨a⟩, ⟨b⟩ => floatSpec.lt a b
-
-def Float.le : Float → Float → Prop := fun a b =>
-  floatSpec.le a.val b.val
-
 instance : Add Float := ⟨Float.add⟩
 instance : Sub Float := ⟨Float.sub⟩
 instance : Mul Float := ⟨Float.mul⟩
 instance : Div Float := ⟨Float.div⟩
 instance : Neg Float := ⟨Float.neg⟩
-instance : LT Float  := ⟨Float.lt⟩
-instance : LE Float  := ⟨Float.le⟩
+
+def Float.lt : Float → Float → Prop := fun a b =>
+  floatSpec.lt a.val b.val
+
+def Float.le : Float → Float → Prop := fun a b =>
+  floatSpec.le a.val b.val
+
+instance : LE Float where
+  le := Float.le
+  lt := Float.lt
 
 /-- Note: this is not reflexive since `NaN != NaN`.-/
 @[extern "lean_float_beq"] opaque Float.beq (a b : Float) : Bool

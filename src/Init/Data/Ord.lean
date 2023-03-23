@@ -68,16 +68,20 @@ def lexOrd [Ord α] [Ord β] : Ord (α × β) where
 def ltOfOrd [Ord α] : LT α where
   lt a b := compare a b == Ordering.lt
 
+def leOfOrd [Ord α] : LE α where
+  toLT := ltOfOrd
+  le a b := compare a b != Ordering.lt
+
 instance [Ord α] : DecidableRel (@LT.lt α ltOfOrd) :=
   inferInstanceAs (DecidableRel (fun a b => compare a b == Ordering.lt))
 
+instance [Ord α] : DecidableRel (@LE.le α leOfOrd) :=
+  inferInstanceAs (DecidableRel (fun a b => compare a b != Ordering.lt))
+
+-- TODO: Remove?
 def Ordering.isLE : Ordering → Bool
   | Ordering.lt => true
   | Ordering.eq => true
   | Ordering.gt => false
 
-def leOfOrd [Ord α] : LE α where
-  le a b := (compare a b).isLE
 
-instance [Ord α] : DecidableRel (@LE.le α leOfOrd) :=
-  inferInstanceAs (DecidableRel (fun a b => (compare a b).isLE))

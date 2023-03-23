@@ -15,11 +15,9 @@ def Phase.toNat : Phase → Nat
   | .mono => 1
   | .impure => 2
 
-instance : LT Phase where
-  lt l r := l.toNat < r.toNat
-
 instance : LE Phase where
   le l r := l.toNat ≤ r.toNat
+  lt l r := l.toNat < r.toNat
 
 instance {p1 p2 : Phase} : Decidable (p1 < p2) := Nat.decLt p1.toNat p2.toNat
 instance {p1 p2 : Phase} : Decidable (p1 ≤ p2) := Nat.decLe p1.toNat p2.toNat

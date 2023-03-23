@@ -36,7 +36,6 @@ structure Position where
 instance : ToString Position := ⟨fun p =>
   "(" ++ toString p.line ++ ", " ++ toString p.character ++ ")"⟩
 
-instance : LT Position := ltOfOrd
 instance : LE Position := leOfOrd
 
 structure Range where
@@ -44,7 +43,6 @@ structure Range where
   «end» : Position
   deriving Inhabited, BEq, Hashable, ToJson, FromJson, Ord
 
-instance : LT Range := ltOfOrd
 instance : LE Range := leOfOrd
 
 /-- A `Location` is a `DocumentUri` and a `Range`. -/

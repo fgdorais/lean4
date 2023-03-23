@@ -89,12 +89,10 @@ inductive NonNeg : Int → Prop where
 
 protected def le (a b : Int) : Prop := NonNeg (b - a)
 
+protected def lt (a b : Int) : Prop := Int.le (a + 1) b
+
 instance : LE Int where
   le := Int.le
-
-protected def lt (a b : Int) : Prop := (a + 1) ≤ b
-
-instance : LT Int where
   lt := Int.lt
 
 set_option bootstrap.genMatcherCode false in

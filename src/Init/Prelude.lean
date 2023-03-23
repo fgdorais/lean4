@@ -1046,15 +1046,17 @@ class OfNat (α : Type u) (_ : Nat) where
 instance (n : Nat) : OfNat Nat n where
   ofNat := n
 
-/-- `LE α` is the typeclass which supports the notation `x ≤ y` where `x y : α`.-/
-class LE (α : Type u) where
-  /-- The less-equal relation: `x ≤ y` -/
-  le : α → α → Prop
-
 /-- `LT α` is the typeclass which supports the notation `x < y` where `x y : α`.-/
 class LT (α : Type u) where
   /-- The less-than relation: `x < y` -/
   lt : α → α → Prop
+
+/-- `LE α` is the typeclass which supports the notation `x ≤ y` where `x y : α`.-/
+class LE (α : Type u) extends LT α where
+  /-- The less-equal relation: `x ≤ y` -/
+  le : α → α → Prop
+  /-- Default less-than relation -/
+  lt x y := And (le x y) (Not (le y x))
 
 /-- `a ≥ b` is an abbreviation for `b ≤ a`. -/
 @[reducible] def GE.ge {α : Type u} [LE α] (a b : α) : Prop := LE.le b a
@@ -1535,14 +1537,12 @@ protected inductive Nat.le (n : Nat) : Nat → Prop
   /-- If `n ≤ m`, then `n ≤ m + 1`. -/
   | step {m} : Nat.le n m → Nat.le n (succ m)
 
-instance : LE Nat where
-  le := Nat.le
-
 /-- The strict less than relation on natural numbers is defined as `n < m := n + 1 ≤ m`. -/
 protected def Nat.lt (n m : Nat) : Prop :=
   Nat.le (succ n) m
 
-instance : LT Nat where
+instance : LE Nat where
+  le := Nat.le
   lt := Nat.lt
 
 theorem Nat.not_succ_le_zero : ∀ (n : Nat), LE.le (succ n) 0 → False
@@ -1741,11 +1741,9 @@ instance (n : Nat) : DecidableEq (Fin n) :=
     | isTrue h  => isTrue (Fin.eq_of_val_eq h)
     | isFalse h => isFalse (Fin.ne_of_val_ne h)
 
-instance {n} : LT (Fin n) where
-  lt a b := LT.lt a.val b.val
-
 instance {n} : LE (Fin n) where
   le a b := LE.le a.val b.val
+  lt a b := LT.lt a.val b.val
 
 instance Fin.decLt {n} (a b : Fin n) : Decidable (LT.lt a b) := Nat.decLt ..
 instance Fin.decLe {n} (a b : Fin n) : Decidable (LE.le a b) := Nat.decLe ..
@@ -1789,6 +1787,10 @@ instance : DecidableEq UInt8 := UInt8.decEq
 instance : Inhabited UInt8 where
   default := UInt8.ofNatCore 0 (by decide)
 
+instance : LE UInt8 where
+  le a b := LE.le a.val b.val
+  lt a b := LT.lt a.val b.val
+
 /-- The size of type `UInt16`, that is, `2^16 = 65536`. -/
 def UInt16.size : Nat := 65536
 
@@ -1827,6 +1829,10 @@ instance : DecidableEq UInt16 := UInt16.decEq
 
 instance : Inhabited UInt16 where
   default := UInt16.ofNatCore 0 (by decide)
+
+instance : LE UInt16 where
+  le a b := LE.le a.val b.val
+  lt a b := LT.lt a.val b.val
 
 /-- The size of type `UInt32`, that is, `2^32 = 4294967296`. -/
 def UInt32.size : Nat := 4294967296
@@ -1874,11 +1880,9 @@ instance : DecidableEq UInt32 := UInt32.decEq
 instance : Inhabited UInt32 where
   default := UInt32.ofNatCore 0 (by decide)
 
-instance : LT UInt32 where
-  lt a b := LT.lt a.val b.val
-
 instance : LE UInt32 where
   le a b := LE.le a.val b.val
+  lt a b := LT.lt a.val b.val
 
 set_option bootstrap.genMatcherCode false in
 /--
@@ -1943,8 +1947,12 @@ instance : DecidableEq UInt64 := UInt64.decEq
 instance : Inhabited UInt64 where
   default := UInt64.ofNatCore 0 (by decide)
 
+instance : LE UInt64 where
+  le a b := LE.le a.val b.val
+  lt a b := LT.lt a.val b.val
+
 /--
-The size of type `UInt16`, that is, `2^System.Platform.numBits`, which may
+The size of type `UISize`, that is, `2^System.Platform.numBits`, which may
 be either `2^32` or `2^64` depending on the platform's architecture.
 -/
 def USize.size : Nat := hPow 2 System.Platform.numBits
@@ -1996,6 +2004,10 @@ instance : Inhabited USize where
   default := USize.ofNatCore 0 (match USize.size, usize_size_eq with
     | _, Or.inl rfl => by decide
     | _, Or.inr rfl => by decide)
+
+instance : LE USize where
+  le a b := LE.le a.val b.val
+  lt a b := LT.lt a.val b.val
 
 /--
 Upcast a `Nat` less than `2^32` to a `USize`.
@@ -2338,8 +2350,6 @@ instance : HAdd String.Pos String String.Pos where
 
 instance : LE String.Pos where
   le p₁ p₂ := LE.le p₁.byteIdx p₂.byteIdx
-
-instance : LT String.Pos where
   lt p₁ p₂ := LT.lt p₁.byteIdx p₂.byteIdx
 
 instance (p₁ p₂ : String.Pos) : Decidable (LE.le p₁ p₂) :=
