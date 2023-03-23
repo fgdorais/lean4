@@ -94,7 +94,7 @@ instance : Stream (Subarray α) α where
   next? s :=
     if h : s.start < s.stop then
       have : s.start + 1 ≤ s.stop := Nat.succ_le_of_lt h
-      some (s.as.get ⟨s.start, Nat.lt_of_lt_of_le h s.h₂⟩, { s with start := s.start + 1, h₁ := this })
+      some (s.toArray.get ⟨s.start, Nat.lt_of_lt_of_le h s.valid.right⟩, { s with start := s.start + 1, valid := And.intro this s.valid.right})
     else
       none
 
