@@ -13,6 +13,8 @@ universe u v
 
 namespace Classical
 
+axiom em (p : Prop) : p ∨ ¬p
+
 noncomputable def indefiniteDescription {α : Sort u} (p : α → Prop) (h : ∃ x, p x) : {x // p x} :=
   choice <| let ⟨x, px⟩ := h; ⟨⟨x, px⟩⟩
 
@@ -23,7 +25,7 @@ theorem choose_spec {α : Sort u} {p : α → Prop} (h : ∃ x, p x) : p (choose
   (indefiniteDescription p h).property
 
 /-- Diaconescu's theorem: excluded middle from choice, Function extensionality and propositional extensionality. -/
-theorem em (p : Prop) : p ∨ ¬p :=
+theorem diaconescu (p : Prop) : p ∨ ¬p :=
   let U (x : Prop) : Prop := x = True ∨ p
   let V (x : Prop) : Prop := x = False ∨ p
   have exU : ∃ x, U x := ⟨True, Or.inl rfl⟩
@@ -126,7 +128,7 @@ theorem byContradiction {p : Prop} (h : ¬p → False) : p :=
 /--
 `by_cases (h :)? p` splits the main goal into two cases, assuming `h : p` in the first branch, and `h : ¬ p` in the second branch.
 -/
-syntax "by_cases " (atomic(ident " : "))? term : tactic
+scoped syntax "by_cases " (atomic(ident " : "))? term : tactic
 
 macro_rules
   | `(tactic| by_cases $h : $e) =>
