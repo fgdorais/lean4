@@ -12,6 +12,7 @@ import Init.Data.List.Basic
 import Init.Data.Prod
 
 namespace Nat.Linear
+open Classical
 
 /-!
   Helper definitions and theorems for constructing linear arithmetic proofs.

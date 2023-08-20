@@ -11,6 +11,8 @@ import Init.Util
 universe u
 
 namespace List
+open Classical
+
 /-! The following functions can't be defined at `Init.Data.List.Basic`, because they depend on `Init.Util`,
    and `Init.Util` depends on `Init.Data.List.Basic`. -/
 

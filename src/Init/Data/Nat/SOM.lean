@@ -8,7 +8,7 @@ import Init.Data.Nat.Linear
 import Init.Data.List.BasicAux
 
 namespace Nat.SOM
-
+open Classical
 open Linear (Var hugeFuel Context Var.denote)
 
 inductive Expr where

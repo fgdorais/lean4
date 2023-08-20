@@ -9,6 +9,8 @@ import Init.Classical
 import Init.Data.List
 
 namespace Lean.Data.AC
+open Classical
+
 inductive Expr
   | var (x : Nat)
   | op (lhs rhs : Expr)
