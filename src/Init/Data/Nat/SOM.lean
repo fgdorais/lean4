@@ -8,7 +8,6 @@ import Init.Data.Nat.Linear
 import Init.Data.List.BasicAux
 
 namespace Nat.SOM
-open Classical
 open Linear (Var hugeFuel Context Var.denote)
 
 inductive Expr where
@@ -109,7 +108,7 @@ theorem Mon.append_denote (ctx : Context) (m₁ m₂ : Mon) : (m₁ ++ m₂).den
 theorem Mon.mul_denote (ctx : Context) (m₁ m₂ : Mon) : (m₁.mul m₂).denote ctx = m₁.denote ctx * m₂.denote ctx :=
   go hugeFuel m₁ m₂
 where
-  go (fuel : Nat) (m₁ m₂ : Mon) : (Mon.mul.go fuel m₁ m₂).denote ctx = m₁.denote ctx * m₂.denote ctx := by
+  go (fuel : Nat) (m₁ m₂ : Mon) : (Mon.mul.go fuel m₁ m₂).denote ctx = m₁.denote ctx * m₂.denote ctx := open Classical in by
     induction fuel generalizing m₁ m₂ with
     | zero => simp! [append_denote]
     | succ _ ih =>
@@ -127,7 +126,8 @@ theorem Poly.append_denote (ctx : Context) (p₁ p₂ : Poly) : (p₁ ++ p₂).d
 theorem Poly.add_denote (ctx : Context) (p₁ p₂ : Poly) : (p₁.add p₂).denote ctx = p₁.denote ctx + p₂.denote ctx :=
   go hugeFuel p₁ p₂
 where
-  go (fuel : Nat) (p₁ p₂ : Poly) : (Poly.add.go fuel p₁ p₂).denote ctx = p₁.denote ctx + p₂.denote ctx := by
+  go (fuel : Nat) (p₁ p₂ : Poly) : (Poly.add.go fuel p₁ p₂).denote ctx = p₁.denote ctx + p₂.denote ctx := open Classical in
+ by
     induction fuel generalizing p₁ p₂ with
     | zero => simp! [append_denote]
     | succ _ ih =>
@@ -142,7 +142,7 @@ where
         · simp [← Nat.add_assoc, ← Nat.right_distrib, eq_of_beq heq]
         · simp [Nat.right_distrib, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
 
-theorem Poly.denote_insertSorted (ctx : Context) (k : Nat) (m : Mon) (p : Poly) : (p.insertSorted k m).denote ctx = p.denote ctx + k * m.denote ctx := by
+theorem Poly.denote_insertSorted (ctx : Context) (k : Nat) (m : Mon) (p : Poly) : (p.insertSorted k m).denote ctx = p.denote ctx + k * m.denote ctx := open Classical in by
   match p with
   | [] => simp!
   | (k', m') :: p =>
@@ -168,7 +168,7 @@ where
              Nat.add_assoc, Nat.add_comm, Nat.add_left_comm,
              Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
 
-theorem Expr.toPoly_denote (ctx : Context) (e : Expr) : e.toPoly.denote ctx = e.denote ctx := by
+theorem Expr.toPoly_denote (ctx : Context) (e : Expr) : e.toPoly.denote ctx = e.denote ctx := open Classical in by
   induction e with
   | num k =>
     simp!; by_cases h : k == 0 <;> simp! [*]

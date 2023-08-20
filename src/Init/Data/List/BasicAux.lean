@@ -11,7 +11,6 @@ import Init.Util
 universe u
 
 namespace List
-open Classical
 
 /-! The following functions can't be defined at `Init.Data.List.Basic`, because they depend on `Init.Util`,
    and `Init.Util` depends on `Init.Data.List.Basic`. -/
@@ -172,7 +171,7 @@ theorem le_antisymm [LT α] [s : Antisymm (¬ · < · : α → α → Prop)] {as
   | [],    []    => rfl
   | [],    b::bs => False.elim <| h₂ (List.lt.nil ..)
   | a::as, []    => False.elim <| h₁ (List.lt.nil ..)
-  | a::as, b::bs => by
+  | a::as, b::bs => open Classical in by
     by_cases hab : a < b
     · exact False.elim <| h₂ (List.lt.head _ _ hab)
     · by_cases hba : b < a

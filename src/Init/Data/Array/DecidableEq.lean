@@ -8,9 +8,8 @@ import Init.Data.Array.Basic
 import Init.Classical
 
 namespace Array
-open Classical
 
-theorem eq_of_isEqvAux [DecidableEq α] (a b : Array α) (hsz : a.size = b.size) (i : Nat) (hi : i ≤ a.size) (heqv : Array.isEqvAux a b hsz (fun x y => x = y) i) (j : Nat) (low : i ≤ j) (high : j < a.size) : a[j] = b[j]'(hsz ▸ high) := by
+theorem eq_of_isEqvAux [DecidableEq α] (a b : Array α) (hsz : a.size = b.size) (i : Nat) (hi : i ≤ a.size) (heqv : Array.isEqvAux a b hsz (fun x y => x = y) i) (j : Nat) (low : i ≤ j) (high : j < a.size) : a[j] = b[j]'(hsz ▸ high) := open Classical in by
   by_cases h : i < a.size
   · unfold Array.isEqvAux at heqv
     simp [h] at heqv
