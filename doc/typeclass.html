@@ -230,11 +230,11 @@ The standard library defines a type class <code>Inhabited</code> to enable type 
 &quot;default&quot; or &quot;arbitrary&quot; element of an inhabited type.
 Let us start with the first step of the program above, declaring an appropriate class:</p>
 <pre><code class="language-lean"><span class="boring">namespace Ex
-</span>class Inhabited (a : Type u) where
+</span>class Inhabited (a : Sort u) where
   default : a
 
 #check @Inhabited.default
--- Inhabited.default : {a : Type u} → [self : Inhabited a] → a
+-- Inhabited.default : {a : Sort u} → [self : Inhabited a] → a
 <span class="boring">end Ex
 </span></code></pre>
 <p>Note <code>Inhabited.default</code> doesn't have any explicit argument.</p>
@@ -242,7 +242,7 @@ Let us start with the first step of the program above, declaring an appropriate 
 The projection <code>Inhabited.default</code> will allow us to &quot;extract&quot; such an element of <code>a</code> from an element of <code>Inhabited a</code>.
 Now we populate the class with some instances:</p>
 <pre><code class="language-lean"><span class="boring">namespace Ex
-</span><span class="boring">class Inhabited (a : Type _) where
+</span><span class="boring">class Inhabited (a : Sort _) where
 </span><span class="boring"> default : a
 </span>instance : Inhabited Bool where
   default := true
@@ -265,7 +265,7 @@ instance : Inhabited Prop where
 </span></code></pre>
 <p>You can use the command <code>export</code> to create the alias <code>default</code> for <code>Inhabited.default</code></p>
 <pre><code class="language-lean"><span class="boring">namespace Ex
-</span><span class="boring">class Inhabited (a : Type _) where
+</span><span class="boring">class Inhabited (a : Sort _) where
 </span><span class="boring"> default : a
 </span><span class="boring">instance : Inhabited Bool where
 </span><span class="boring"> default := true
@@ -296,7 +296,7 @@ This causes class inference to chain through instances recursively, backtracking
 </code></pre>
 <p>With this added to the earlier instance declarations, type class instance can infer, for example, a default element of <code>Nat × Bool</code>:</p>
 <pre><code class="language-lean"><span class="boring">namespace Ex
-</span><span class="boring">class Inhabited (a : Type u) where
+</span><span class="boring">class Inhabited (a : Sort u) where
 </span><span class="boring"> default : a
 </span><span class="boring">instance : Inhabited Bool where
 </span><span class="boring"> default := true
@@ -312,9 +312,15 @@ This causes class inference to chain through instances recursively, backtracking
 <span class="boring">end Ex
 </span></code></pre>
 <p>Similarly, we can inhabit type function with suitable constant functions:</p>
-<pre><code class="language-lean">instance [Inhabited b] : Inhabited (a -&gt; b) where
+<pre><code class="language-lean"><span class="boring">namespace Ex
+</span><span class="boring">class Inhabited (a : Sort u) where
+</span><span class="boring"> default : a
+</span><span class="boring">opaque default [Inhabited a] : a :=
+</span><span class="boring"> Inhabited.default
+</span>instance [Inhabited b] : Inhabited (a -&gt; b) where
   default := fun _ =&gt; default
-</code></pre>
+<span class="boring">end Ex
+</span></code></pre>
 <p>As an exercise, try defining default instances for other types, such as <code>List</code> and <code>Sum</code> types.</p>
 <p>The Lean standard library contains the definition <code>inferInstance</code>. It has type <code>{α : Sort u} → [i : α] → α</code>,
 and is useful for triggering the type class resolution procedure when the expected type is an instance.</p>
