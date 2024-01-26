@@ -195,7 +195,7 @@ a * (b:60 + c:61):60
 the right argument to have precedence <strong>at least</strong> 71. Thus, this parse is invalid. In contrast, <code>(a * b) + c</code> assigns
 a precedence of <code>70</code> to <code>(a * b)</code>. This is compatible with addition which expects the left argument to have precedence
 **at least <code>60</code> ** (<code>70</code> is greater than <code>60</code>). Thus, the string <code>a * b + c</code> is parsed as <code>(a * b) + c</code>.
-For more details, please look at the <a href="../syntax.html#notations-and-precedence">Lean manual on syntax extensions</a>.</p>
+For more details, please look at the <a href="./notation.html#notations-and-precedence">Lean manual on syntax extensions</a>.</p>
 <p>To go from strings into <code>Arith</code>, we define a macro to
 translate the syntax category <code>arith</code> into an <code>Arith</code> inductive value that
 lives in <code>term</code>:</p>
