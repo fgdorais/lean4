@@ -6,6 +6,7 @@ Author: Leonardo de Moura
 prelude
 import Init.SimpLemmas
 import Init.Data.Nat.Basic
+import Init.Data.Option.Basic
 import Init.Data.List.Notation
 
 /-!
@@ -948,25 +949,24 @@ def IsPrefix (l₁ : List α) (l₂ : List α) : Prop := Exists fun t => l₁ ++
 
 @[inherit_doc] infixl:50 " <+: " => IsPrefix
 
-/--  `isPrefixOf l₁ l₂` returns `true` Iff `l₁` is a prefix of `l₂`.
-That is, there exists a `t` such that `l₂ == l₁ ++ t`. -/
-def isPrefixOf [BEq α] : List α → List α → Bool
-  | [],    _     => true
-  | _,     []    => false
-  | a::as, b::bs => a == b && isPrefixOf as bs
-
-@[simp] theorem isPrefixOf_nil_left [BEq α] : isPrefixOf ([] : List α) l = true := by
-  simp [isPrefixOf]
-@[simp] theorem isPrefixOf_cons_nil [BEq α] : isPrefixOf (a::as) ([] : List α) = false := rfl
-theorem isPrefixOf_cons₂ [BEq α] {a : α} :
-    isPrefixOf (a::as) (b::bs) = (a == b && isPrefixOf as bs) := rfl
-
 /-- `isPrefixOf? l₁ l₂` returns `some t` when `l₂ == l₁ ++ t`. -/
 def isPrefixOf? [BEq α] : List α → List α → Option (List α)
   | [], l₂ => some l₂
   | _, [] => none
   | (x₁ :: l₁), (x₂ :: l₂) =>
     if x₁ == x₂ then isPrefixOf? l₁ l₂ else none
+
+/--  `isPrefixOf l₁ l₂` returns `true` Iff `l₁` is a prefix of `l₂`.
+That is, there exists a `t` such that `l₂ == l₁ ++ t`. -/
+def isPrefixOf [BEq α] (l₁ l₂ : List α) : Bool := (l₁.isPrefixOf? l₂).isSome
+
+@[simp] theorem isPrefixOf_nil_left [BEq α] : isPrefixOf ([] : List α) l = true := by
+  simp [isPrefixOf, Option.isSome]
+@[simp] theorem isPrefixOf_cons_nil [BEq α] : isPrefixOf (a::as) ([] : List α) = false := rfl
+theorem isPrefixOf_cons₂ [BEq α] {a : α} :
+    isPrefixOf (a::as) (b::bs) = (a == b && isPrefixOf as bs) := by
+  simp only [isPrefixOf, Option.isSome, isPrefixOf?]; split; rfl; rfl
+
 
 /-! ### IsSuffix / isSuffixOf / isSuffixOf? -/
 
